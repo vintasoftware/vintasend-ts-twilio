@@ -1,9 +1,10 @@
 import { TwilioSmsAdapter, TwilioSmsAdapterFactory } from '../twilio-sms-adapter';
 import type { TwilioConfig } from '../twilio-sms-adapter';
+import { vi, type Mock } from 'vitest';
 
 const mockTemplateRenderer = {
-  render: jest.fn(),
-  injectLogger: jest.fn(),
+  render: vi.fn(),
+  injectLogger: vi.fn(),
 };
 
 const twilioConfig: TwilioConfig = {
@@ -37,8 +38,8 @@ function createNotification(overrides = {}) {
 
 describe('TwilioSmsAdapter', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    global.fetch = jest.fn();
+    vi.clearAllMocks();
+    global.fetch = vi.fn() as any;
   });
 
   test('has correct key and notificationType', () => {
@@ -63,7 +64,7 @@ describe('TwilioSmsAdapter', () => {
     });
 
     const mockResponse = { ok: true, status: 201 };
-    jest.mocked(fetch).mockResolvedValue(mockResponse as Response);
+    (fetch as Mock).mockResolvedValue(mockResponse as Response);
 
     await adapter.send(notification as any, context);
 
@@ -72,7 +73,7 @@ describe('TwilioSmsAdapter', () => {
 
     // Verify fetch was called with correct Twilio API URL
     expect(fetch).toHaveBeenCalledTimes(1);
-    const [url, options] = jest.mocked(fetch).mock.calls[0];
+    const [url, options] = (fetch as Mock).mock.calls[0];
     expect(url).toBe(`https://api.twilio.com/2010-04-01/Accounts/${twilioConfig.accountSid}/Messages.json`);
 
     // Verify auth header
@@ -100,9 +101,9 @@ describe('TwilioSmsAdapter', () => {
     const mockResponse = {
       ok: false,
       status: 400,
-      text: jest.fn().mockResolvedValue('Bad Request: Invalid phone number'),
+      text: vi.fn().mockResolvedValue('Bad Request: Invalid phone number'),
     };
-    jest.mocked(fetch).mockResolvedValue(mockResponse as any);
+    (fetch as Mock).mockResolvedValue(mockResponse as any);
 
     await expect(adapter.send(notification as any, {})).rejects.toThrow(
       'Twilio SMS send failed (400): Bad Request: Invalid phone number'
@@ -114,7 +115,7 @@ describe('TwilioSmsAdapter', () => {
     const notification = createNotification();
 
     mockTemplateRenderer.render.mockResolvedValue({ subject: '', body: 'Hello' });
-    jest.mocked(fetch).mockRejectedValue(new Error('Network error'));
+    (fetch as Mock).mockRejectedValue(new Error('Network error'));
 
     await expect(adapter.send(notification as any, {})).rejects.toThrow('Network error');
   });
