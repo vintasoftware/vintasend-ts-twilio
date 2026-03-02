@@ -1,6 +1,6 @@
-import { TwilioSmsAdapter, TwilioSmsAdapterFactory } from '../twilio-sms-adapter';
+import { type Mock, vi } from 'vitest';
 import type { TwilioConfig } from '../twilio-sms-adapter';
-import { vi, type Mock } from 'vitest';
+import { TwilioSmsAdapter, TwilioSmsAdapterFactory } from '../twilio-sms-adapter';
 
 const mockTemplateRenderer = {
   render: vi.fn(),
@@ -74,7 +74,9 @@ describe('TwilioSmsAdapter', () => {
     // Verify fetch was called with correct Twilio API URL
     expect(fetch).toHaveBeenCalledTimes(1);
     const [url, options] = (fetch as Mock).mock.calls[0];
-    expect(url).toBe(`https://api.twilio.com/2010-04-01/Accounts/${twilioConfig.accountSid}/Messages.json`);
+    expect(url).toBe(
+      `https://api.twilio.com/2010-04-01/Accounts/${twilioConfig.accountSid}/Messages.json`,
+    );
 
     // Verify auth header
     const expectedCredentials = btoa(`${twilioConfig.accountSid}:${twilioConfig.authToken}`);
@@ -82,7 +84,7 @@ describe('TwilioSmsAdapter', () => {
       expect.objectContaining({
         Authorization: `Basic ${expectedCredentials}`,
         'Content-Type': 'application/x-www-form-urlencoded',
-      })
+      }),
     );
 
     // Verify body params
@@ -106,7 +108,7 @@ describe('TwilioSmsAdapter', () => {
     (fetch as Mock).mockResolvedValue(mockResponse as any);
 
     await expect(adapter.send(notification as any, {})).rejects.toThrow(
-      'Twilio SMS send failed (400): Bad Request: Invalid phone number'
+      'Twilio SMS send failed (400): Bad Request: Invalid phone number',
     );
   });
 

@@ -1,8 +1,10 @@
+import type {
+  AnyDatabaseNotification,
+  BaseEmailTemplateRenderer,
+  BaseNotificationTypeConfig,
+  JsonObject,
+} from 'vintasend';
 import { BaseNotificationAdapter } from 'vintasend';
-import type { BaseEmailTemplateRenderer } from 'vintasend';
-import type { JsonObject } from 'vintasend/dist/types/json-values';
-import type { AnyDatabaseNotification } from 'vintasend/dist/types/notification';
-import type { BaseNotificationTypeConfig } from 'vintasend/dist/types/notification-type-config';
 
 export interface TwilioConfig {
   accountSid: string;
@@ -25,7 +27,11 @@ export class TwilioSmsAdapter<
   key: string | null = 'twilio-sms';
   private config: TwilioConfig;
 
-  constructor(templateRenderer: TemplateRenderer, enqueueNotifications: boolean, config: TwilioConfig) {
+  constructor(
+    templateRenderer: TemplateRenderer,
+    enqueueNotifications: boolean,
+    config: TwilioConfig,
+  ) {
     super(templateRenderer, 'SMS', enqueueNotifications);
     this.config = config;
   }
@@ -67,7 +73,7 @@ export class TwilioSmsAdapterFactory<Config extends BaseNotificationTypeConfig> 
   create<TemplateRenderer extends BaseEmailTemplateRenderer<Config>>(
     templateRenderer: TemplateRenderer,
     enqueueNotifications: boolean,
-    config: TwilioConfig
+    config: TwilioConfig,
   ): TwilioSmsAdapter<TemplateRenderer, Config> {
     return new TwilioSmsAdapter(templateRenderer, enqueueNotifications, config);
   }
