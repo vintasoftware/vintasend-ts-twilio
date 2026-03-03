@@ -1,1 +1,1 @@
-export { TwilioSmsAdapter, TwilioSmsAdapterFactory } from './twilio-sms-adapter';
+export { TwilioSmsAdapter, TwilioSmsAdapterFactory } from './twilio-sms-adapter.js';
