@@ -2,6 +2,7 @@ import type {
   AnyDatabaseNotification,
   BaseEmailTemplateRenderer,
   BaseNotificationTypeConfig,
+  EmailTemplate,
   JsonObject,
 } from 'vintasend';
 import { BaseNotificationAdapter } from 'vintasend';
@@ -40,7 +41,14 @@ export class TwilioSmsAdapter<
     return false;
   }
 
-  async send(notification: AnyDatabaseNotification<Config>, context: JsonObject): Promise<void> {
+  /**
+   * Returns what the renderer produced so the service can record which template version rendered
+   * this notification. Nothing else reads it — the message is already sent by then.
+   */
+  async send(
+    notification: AnyDatabaseNotification<Config>,
+    context: JsonObject,
+  ): Promise<EmailTemplate> {
     const template = await this.templateRenderer.render(notification, context);
     const recipientPhone = await this.getRecipientEmail(notification);
 
@@ -66,6 +74,8 @@ export class TwilioSmsAdapter<
       const errorBody = await response.text();
       throw new Error(`Twilio SMS send failed (${response.status}): ${errorBody}`);
     }
+
+    return template;
   }
 }
 
