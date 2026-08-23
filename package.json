@@ -1,6 +1,10 @@
 {
   "name": "vintasend-twilio",
   "version": "1.0.0-alpha1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vintasoftware/vintasend-ts-twilio.git"
+  },
   "description": "",
   "type": "module",
   "main": "dist/index.js",
